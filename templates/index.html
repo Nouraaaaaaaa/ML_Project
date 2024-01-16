@@ -1,36 +1,94 @@
 <!DOCTYPE html>
-<html >
-<!--From https://codepen.io/frytyler/pen/EGdtg-->
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Predict the churned client</title>
-  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
-<link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
-<link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
-<link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Churned Customer Simulator</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .dark {
+            background-color: #1f2937;
+            color: #ffffff;
+        }
+        .dark input{
+            color: #000;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+<body class="bg-white dark:bg-gray-800">
+    <div class="container mx-auto p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Churned Customer Simulator</h1>
+            <label for="darkModeToggle" class="flex items-center cursor-pointer">
+                <span class="mr-2">Dark Mode</span>
+                <input type="checkbox" id="darkModeToggle" class="hidden">
+                <span class="bg-gray-300 dark:bg-gray-600 w-10 h-6 rounded-full flex items-center transition duration-300 ease-in-out">
+                    <span class="bg-white dark:bg-gray-400 w-4 h-4 rounded-full shadow-md transform transition duration-300 ease-in-out"></span>
+                </span>
+            </label>
+        </div>
+        <form action="{{ url_for('predict')}}"method="post">
+            <div class="mb-4">
+                <label for="Vintage" class="block mb-2">Vintage</label>
+                <input type="number" id="Vintage" name ="Vintage" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="Age" class="block mb-2">Age</label>
+                <input type="number" id="Age" name="Age" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="days_since_last_transaction" class="block mb-2">days_since_last_transaction</label>
+                <input type="number" id="days_since_last_transaction" name="days_since_last_transaction" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="Curent Balance" class="block mb-2">Curent Balance</label>
+                <input type="number" id="Curent Balance" name="Curent Balance" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="previous_month_credit" class="block mb-2">previous_month_credit</label>
+                <input type="number" id="previous_month_credit" name="previous_month_credit" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+           
+            <div class="mb-4">
+                <label for="current_month_debit" class="block mb-2">current_month_debit</label>
+                <input type="number" id="current_month_debit" name="Curent Balance" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mb-4">
+                <label for="previous_month_debit" class="block mb-2">previous_month_debit</label>
+                <input type="number" id="previous_month_debit" name="previous_month_debit" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            
+            
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">Predict</button>
+        </form>
+    </div>
+    
+    <script>
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
 
-<body>
- <div class="login">
-	<h1>churned client</h1>
-
-    <form action="{{ url_for('predict')}}"method="post">
-    	<input type="text" name="Vintage" placeholder="Vintage" required="required" />
-        <input type="text" name="Age" placeholder="Age" required="required" />
-		<input type="text" name="Previous Balance" placeholder="Previous Balance" required="required" />
-    <input type="text" name="Curent Balance" placeholder="Curent Balance" required="required" />
-
-        <button type="submit" class="btn btn-primary btn-block btn-large">Predict</button>
-    </form>
-
-   <br>
-   <br>
-   {{ prediction_text }}
-
- </div>
-
-
+        darkModeToggle.addEventListener('change', () => {
+            body.classList.toggle('dark');
+        });
+    </script>
+    {% if response == 'churned' %}
+    <script>
+        Swal.fire({
+            title: "Chruned Customer",
+            text: "This customer is more likely to churn",
+            icon: "warning"
+        });
+    </script>
+    {% elif response == 'retained' %}
+    <script>
+        Swal.fire({
+            title: "Not Chruned Customer",
+            text: "Loyal Customer",
+            icon: "success"
+        });
+    </script>
+    {% endif %}
 </body>
 </html>
