@@ -1,33 +1,40 @@
 import numpy as np
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, render_template
 import pickle
 
 app = Flask(__name__)
-model = pickle.load(open('model_final.pkl', 'rb'))
+model = pickle.load(open('model_final1.pkl', 'rb'))
+
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
-@app.route('/predict',methods=['POST'])
-def predict():
-    '''
-    For rendering results on HTML GUI
-    '''
-    int_features = [int(x) for x in request.form.values()]
-    final_features = [np.array(int_features)]
-    prediction = model.predict(final_features)
-    print("---------",prediction)
-    output = round(prediction[0], 1)
-    print(type(output))
-    print(output)
-    response=''
-    if(output == 0.0):
-        response='retained'
-    else:
-        response='churned'
-    return render_template('index.html', response=response)
 
+@app.route('/predict', methods=['POST'])
+def predict():
+    try:
+        int_features = request.form.getlist('features')
+
+        int_features = [float(feature) for feature in int_features]
+
+        print(int_features)
+        print('before prediction')
+        prediction = model.predict(np.array(int_features).reshape(1, -1))
+
+        print(prediction)
+        print('after prediction')
+
+        output = round(prediction[0], 1)
+        print(output)
+
+        response = 'retained' if prediction[0] == 0 else 'churned'
+
+        print("Prediction Result:", response)
+
+        return render_template('index.html', response=response)
+    except Exception as e:
+        return render_template('index.html', response=f'Error: {str(e)}')
 
 
 if __name__ == "__main__":
